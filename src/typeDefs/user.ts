@@ -7,12 +7,11 @@ export const userTypeDef = `# GraphQL type definition for User
     }
     
     extend type Query {
-        users: [User!]!
-        user(email: String!): User
+        logIn(email: String!, saltedHash: String!): User
     }
 
     extend type Mutation {
-        createUser(email: String!, password: String!): User!
+        signUp(email: String!, password: String!): User
         deleteUser(id: ID!): Boolean!
     }
 `;

@@ -3,8 +3,8 @@ import { MyContext } from "../container";
 
 export const userResolvers = {
     Query: {
-        logIn: async (_: any, args: { email: string, password: string }, context: MyContext) => {
-            return await context.userService.verifyUser(args.email, args.password);
+        logIn: async (_: any, args: { email: string, saltedHash: string }, context: MyContext) => {
+            return await context.userService.verifyUser(args.email, args.saltedHash);
         }
     },
 
