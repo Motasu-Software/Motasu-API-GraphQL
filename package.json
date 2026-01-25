@@ -1,25 +1,24 @@
 {
-  "name": "motasu-api-graphql",
+  "name": "motasu-api",
   "version": "1.0.0",
-  "description": "Centralized API used for Motasu Application",
+  "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Motasu-Software/Motasu-API-GraphQL.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Motasu-Software/Motasu-API-GraphQL/issues"
-  },
-  "homepage": "https://github.com/Motasu-Software/Motasu-API-GraphQL#readme",
+  "type": "module",
   "dependencies": {
-    "apollo-server": "^3.13.0",
+    "@apollo/server": "^5.3.0",
     "graphql": "^16.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
