@@ -1,13 +1,19 @@
-const users = [
-    {id: '1', email: 'alice@example.com', hash: 'hash1', salt: 'salt1'},
-    {id: '2', email: 'bob@example.com', hash: 'hash2', salt: 'salt2'},
-    {id: '3', email: 'jim@example.com', hash: 'hash3', salt: 'salt3'}
-];
+import { markAsUntransferable } from "node:worker_threads";
+import { MyContext } from "../container";
 
 export const userResolvers = {
     Query: {
-        users: () => users,
-        user: (_: any, args: { email: string }) => users.find(user => user.email === args.email),   
-    }};
-    
+        logIn: async (_: any, args: { email: string, password: string }, context: MyContext) => {
+            return await context.userService.verifyUser(args.email, args.password);
+        }
+    },
 
+    Mutation: {
+        createUser: async (_: any, args: { email: string, password: string }, context: MyContext) => {
+            return await context.userService.createUser(args.email, args.password);
+        },
+        deleteUser: async (_: any, args: { id: string }, context: MyContext) => {
+            return await context.userService.deleteUser(args.id);
+        }
+    }
+};
