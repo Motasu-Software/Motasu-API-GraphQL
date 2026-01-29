@@ -1,24 +1,29 @@
-name: Deploy GraphQL API 
+name: Deploy GraphQL API
 run-name: ${{ github.actor }} is deploying GraphQL API
-on: 
+
+on:
   pull_request:
-    branches:
-      - main
+    branches: ['main']
   push:
-    branches:
-      - main
+    branches: ['main']
   release:
     types: [published]
   workflow_dispatch:
     inputs:
       target_env:
-        description: 'Target environment for deployment'
+        description: "Target environment for deployment"
         required: true
-        default: 'dev'
+        default: "dev"
         type: choice
         options:
           - dev
           - production
+
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -27,28 +32,124 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: "20.x"
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Run tests
         run: npm test
-  deploy:
+
+  build-and-push:
     needs: tests
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
-      - name: Set environment variable
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/main' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Définir les variables d'environnement
         run: |
-          echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
+          IMG_TAG="dev"
+          PORT="3000"
+          ENV_NAME="dev"
+
+          # Cas Release / Prod
           if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "DEPLOY_ENV=production" >> $GITHUB_ENV
+            IMG_TAG="${{ github.ref_name }}"
+            PORT="8080"
+            ENV_NAME="production"
           fi
 
+          # Cas Manuel
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "DEPLOY_ENV=${{ inputs.target_env }}" >> $GITHUB_ENV
+            TARGET="${{ inputs.target_env }}"
+            ENV_NAME="$TARGET"
+            if [[ "$TARGET" == "production" ]]; then
+               IMG_TAG="latest"
+               PORT="8080"
+            else
+               IMG_TAG="dev"
+               PORT="3000"
+            fi
           fi
-      - name: Deploy
-        run: |
-          echo "Deploying to environment: $DEPLOY_ENV"
-          # Add your deployment commands here
+
+          FULL_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$IMG_TAG"
+          FULL_IMAGE=$(echo "$FULL_IMAGE" | tr '[:upper:]' '[:lower:]')
+
+          echo "DEPLOY_ENV=$ENV_NAME" >> $GITHUB_ENV
+          echo "HOST_PORT=$PORT" >> $GITHUB_ENV
+          echo "FULL_IMAGE_NAME=$FULL_IMAGE" >> $GITHUB_ENV
+
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "compose.yaml"
+          target: "/home/${{ secrets.SSH_USERNAME }}/deployments/${{ env.DEPLOY_ENV }}"
+
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.actor }}
+          DEPLOY_ENV: ${{ env.DEPLOY_ENV }}
+          HOST_PORT: ${{ env.HOST_PORT }}
+          FULL_IMAGE_NAME: ${{ env.FULL_IMAGE_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }} 
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: GH_TOKEN,USERNAME,DEPLOY_ENV,HOST_PORT,FULL_IMAGE_NAME,JWT_SECRET
+          script: |
+            echo $GH_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
+
+            cd /home/${{ secrets.SSH_USERNAME }}/deployments/$DEPLOY_ENV
+
+            export FULL_IMAGE_NAME=$FULL_IMAGE_NAME
+            export DEPLOY_ENV=$DEPLOY_ENV
+            export HOST_PORT=$HOST_PORT
+            # Export du secret pour que docker compose le voie
+            export JWT_SECRET=$JWT_SECRET
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            
+            docker image prune -f
