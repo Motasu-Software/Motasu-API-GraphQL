@@ -39,14 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set environment variable
-        run: echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
-        if: [["${{github.event_name}}" == "release"]]; then
-          echo "DEPLOY_ENV=production" >> $GITHUB_ENV
-        fi
+        run: |
+          echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "DEPLOY_ENV=production" >> $GITHUB_ENV
+          fi
 
-        if: [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          echo "DEPLOY_ENV=${{ inputs.target_env }}" >> $GITHUB_ENV
-        fi
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "DEPLOY_ENV=${{ inputs.target_env }}" >> $GITHUB_ENV
+          fi
       - name: Deploy
         run: |
           echo "Deploying to environment: $DEPLOY_ENV"
