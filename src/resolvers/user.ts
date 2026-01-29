@@ -1,15 +1,18 @@
-import { markAsUntransferable } from "node:worker_threads";
+
 import { MyContext } from "../container";
 
 export const userResolvers = {
     Query: {
-        logIn: async (_: any, args: { email: string, saltedHash: string }, context: MyContext) => {
-            return await context.userService.verifyUser(args.email, args.saltedHash);
+        getUsers: async (_: any, __: any, context: MyContext) => {
+            return await context.userService.getUsers();
         }
     },
 
     Mutation: {
-        createUser: async (_: any, args: { email: string, password: string }, context: MyContext) => {
+        logIn: async (_: any, args: { email: string, password: string }, context: MyContext) => {
+            return await context.userService.logIn(args.email, args.password);
+        },
+        signUp: async (_: any, args: { email: string, password: string }, context: MyContext) => {
             return await context.userService.createUser(args.email, args.password);
         },
         deleteUser: async (_: any, args: { id: string }, context: MyContext) => {

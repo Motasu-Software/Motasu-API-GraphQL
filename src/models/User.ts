@@ -1,6 +1,6 @@
 export interface User {
-    id: String;
-    email: String;
-    hash: String;
-    salt: String;
+    id: string;
+    email: string;
+    hash: string;
+    salt: string;
 }

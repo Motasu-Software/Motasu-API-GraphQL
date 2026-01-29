@@ -2,16 +2,20 @@ export const userTypeDef = `# GraphQL type definition for User
     type User {
         id: ID!
         email: String!
-        hash : String!
-        salt : String!
+    }
+
+    type AuthPayload {
+        token: String!
+        user: User!
     }
     
     extend type Query {
-        logIn(email: String!, saltedHash: String!): User
-    }
-
+        getUsers: [User!]!
+        }
+        
     extend type Mutation {
-        signUp(email: String!, password: String!): User
+        signUp(email: String!, password: String!): AuthPayload
+        logIn(email: String!, password: String!): AuthPayload
         deleteUser(id: ID!): Boolean!
     }
 `;

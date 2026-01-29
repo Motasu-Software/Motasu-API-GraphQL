@@ -8,26 +8,30 @@ export class UserStubStrategy implements IUserService {
         {id: '3', email: 'jim@example.com', hash: 'hash3', salt: 'salt3'}
     ];
 
-    async verifyUser(email: String, saltedHash: String): Promise<User | null> {
-        const user = this.users.find(user => user.email === email && user.hash === saltedHash);
+    async getUserByEmail(email: string): Promise<User | null> {
+        const user = this.users.find(user => user.email === email);
         return user || null;
     }
 
-    async createUser(email: String, password: String): Promise<User> {
+    async createUser(email: string, hash: string, salt: string): Promise<User> {
         const newUser: User = {
             id: (this.users.length + 1).toString(),
             email: email,
-            hash: password, // In a real implementation, hash the password properly
-            salt: 'staticSalt' // In a real implementation, generate a unique salt
+            hash: hash, // In a real implementation, hash the password properly
+            salt: salt // In a real implementation, generate a unique salt
         };
         this.users.push(newUser);
         return newUser;
     }
 
-    async deleteUser(id: String): Promise<boolean> {
+    async deleteUser(id: string): Promise<boolean> {
         const initialLength = this.users.length;
         this.users = this.users.filter(user => user.id !== id);
         return this.users.length < initialLength;
 
+    }
+
+    async getUsers(): Promise<User[]> {
+        return this.users;
     }
 }
