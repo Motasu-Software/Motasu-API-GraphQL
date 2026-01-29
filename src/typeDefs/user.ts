@@ -8,10 +8,6 @@ export const userTypeDef = `# GraphQL type definition for User
         token: String!
         user: User!
     }
-    
-    extend type Query {
-        
-        }
         
     extend type Mutation {
         signUp(email: String!, password: String!): AuthPayload
