@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set environment variable
         run: echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
-        if [["${{github.event_name}}" == "release"]]; then
+        if: [["${{github.event_name}}" == "release"]]; then
           echo "DEPLOY_ENV=production" >> $GITHUB_ENV
         fi
 
