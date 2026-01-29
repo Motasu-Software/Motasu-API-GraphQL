@@ -3,9 +3,9 @@ import { MyContext } from "../container";
 
 export const userResolvers = {
     Query: {
-        getUsers: async (_: any, __: any, context: MyContext) => {
-            return await context.userService.getUsers();
-        }
+        // getUsers: async (_: any, __: any, context: MyContext) => {
+        //     return await context.userService.getUsers();
+        // }
     },
 
     Mutation: {

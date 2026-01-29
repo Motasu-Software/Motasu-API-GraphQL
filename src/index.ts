@@ -4,6 +4,7 @@ import {typeDefs} from './typeDefs';
 import { resolvers } from './resolvers';
 import dotenv from 'dotenv';
 import { createServices } from './container';
+import depthLimit from 'graphql-depth-limit';
 
 dotenv.config();
 
@@ -16,7 +17,12 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 async function startServer() {
 
     const services = createServices();
-    const server = new ApolloServer({typeDefs, resolvers});
+    const server = new ApolloServer({
+        typeDefs, 
+        resolvers,
+        introspection: process.env.NODE_ENV !== 'production',
+        validationRules: [depthLimit(5)],
+    });
     const { url } = await startStandaloneServer(server, {
         listen : {port: 4000},
         context: async ({req}) => ({    
