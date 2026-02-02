@@ -73,6 +73,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Upload Compose File as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-file
+          path: compose.yaml
+          retention-days: 1
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -80,7 +87,11 @@ jobs:
     
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Download Compose File
+        uses: actions/download-artifact@v4
+        with:
+          name: compose-file
+          path: .
 
       - name: Définir les variables d'environnement
         run: |
