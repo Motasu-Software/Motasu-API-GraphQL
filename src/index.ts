@@ -36,10 +36,10 @@ async function startServer() {
             if (token) {
                 try {
                     const cleanedToken = token.replace('Bearer ', '');
-                    const decodedToken = jwt.verify(cleanedToken, JWT_SECRET) as { id: string, email: string };
+                    const decodedToken = jwt.verify(cleanedToken, JWT_SECRET) as { userId: string, email: string };
                     context.userContext = decodedToken
                 }catch (e){
-                    console.warn('Invalid token');
+                    // console.info('Invalid token');
                 }
             
          

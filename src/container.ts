@@ -3,7 +3,7 @@ import { UserStubStrategy } from "./services/strategies/UserStubStrategy";
 import { UserPrismaStrategy } from "./services/strategies/UserPrismaStrategy";
 
 export interface UserContext {
-    id: string;
+    userId: string;
     email: string;
 }
 
