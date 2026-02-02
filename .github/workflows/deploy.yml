@@ -101,7 +101,8 @@ jobs:
 
           # Cas Release / Prod
           if [[ "${{ github.event_name }}" == "release" ]]; then
-            IMG_TAG="${{ github.ref_name }}"
+            RAW_TAG="${{ github.ref_name }}"
+            IMG_TAG="${RAW_TAG#v}"
             PORT="8080"
             ENV_NAME="production"
           fi
