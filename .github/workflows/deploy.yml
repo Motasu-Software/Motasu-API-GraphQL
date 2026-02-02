@@ -140,7 +140,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: GH_TOKEN,USERNAME,DEPLOY_ENV,HOST_PORT,FULL_IMAGE_NAME,JWT_SECRET
+          envs: GH_TOKEN,USERNAME,DEPLOY_ENV,HOST_PORT,FULL_IMAGE_NAME,JWT_SECRET,DB_PASSWORD,DB_USER,DB_NAME
           script: |
             echo $GH_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
 
@@ -151,6 +151,9 @@ jobs:
             export HOST_PORT=$HOST_PORT
             # Export du secret pour que docker compose le voie
             export JWT_SECRET=$JWT_SECRET
+            export DB_PASSWORD=$DB_PASSWORD
+            export DB_USER=$DB_USER
+            export DB_NAME=$DB_NAME
 
             docker compose pull
             docker compose up -d --remove-orphans
