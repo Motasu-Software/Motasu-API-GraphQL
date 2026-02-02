@@ -15,8 +15,11 @@ export const userResolvers = {
         signUp: async (_: any, args: { email: string, password: string }, context: MyContext) => {
             return await context.userService.createUser(args.email, args.password);
         },
-        deleteUser: async (_: any, args: { id: string }, context: MyContext) => {
-            return await context.userService.deleteUser(args.id);
+        deleteAccount: async (_: any, __: any, context: MyContext) => {
+            if (!context.userContext || !context.userContext.id) {
+                throw new Error("User not authenticated");
+            }
+            return await context.userService.deleteUser(context.userContext.id);
         }
     }
 };

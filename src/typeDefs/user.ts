@@ -12,7 +12,7 @@ export const userTypeDef = `# GraphQL type definition for User
     extend type Mutation {
         signUp(email: String!, password: String!): AuthPayload
         logIn(email: String!, password: String!): AuthPayload
-        deleteUser(id: ID!): Boolean!
+        deleteAccount: Boolean!
     }
 `;
 

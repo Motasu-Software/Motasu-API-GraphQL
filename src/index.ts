@@ -3,8 +3,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import {typeDefs} from './typeDefs';
 import { resolvers } from './resolvers';
 import dotenv from 'dotenv';
-import { createServices } from './container';
+import { createServices, MyContext } from './container';
 import depthLimit from 'graphql-depth-limit';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -25,11 +26,29 @@ async function startServer() {
     });
     const { url } = await startStandaloneServer(server, {
         listen : {port: 4000},
-        context: async ({req}) => ({    
-            ...services
+        context: async ({req}) : Promise<MyContext> => {    
+            const token = req.headers.authorization || ''
+
+            const context: MyContext = {
+                ...services
+            };
+
+            if (token) {
+                try {
+                    const cleanedToken = token.replace('Bearer ', '');
+                    const decodedToken = jwt.verify(cleanedToken, JWT_SECRET) as { id: string, email: string };
+                    context.userContext = decodedToken
+                }catch (e){
+                    console.warn('Invalid token');
+                }
+            
+         
         
-        })
+            }
+            return context;
+        }
     });
+    console.log(`🚀  Server ready at: ${url}`);
 
 }
 

@@ -15,7 +15,7 @@ services:
     environment:
       - NODE_ENV=${DEPLOY_ENV}
       - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
     networks:
       - motasu-network
     depends_on:
