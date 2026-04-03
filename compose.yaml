@@ -6,7 +6,10 @@ networks:
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        DATABASE_URL: ${DATABASE_URL}
     image: ${FULL_IMAGE_NAME}
     container_name: motasu-api-${DEPLOY_ENV}
     restart: unless-stopped

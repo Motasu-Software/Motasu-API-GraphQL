@@ -5,16 +5,25 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient(); // Assume PrismaClient is properly imported and configured
 
 export class UserPrismaStrategy implements IUserService {
-    createUser(email: string, hash: string, salt: string): Promise<User> {
+    createUser(email: string, hash: string): Promise<User> {
         const newUser = prisma.user.create({
             data: {
                 email: email,
-                hash: hash,
-                salt: salt
+                hash: hash
             }
         });
         return newUser;
     }
+
+    getUserById(id: string): Promise<User | null> {
+        const user = prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+        return user;
+    }
+
     deleteUser(id: string): Promise<boolean> {
         return prisma.user.delete({
             where: {

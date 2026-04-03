@@ -1,4 +1,4 @@
-import { IUserService } from "./interfaces/IUserService";
+import { IUserService } from "./interfaces/IUserService.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 import bcrypt from "bcryptjs";
@@ -9,7 +9,14 @@ export class UserService {
     private generateToken(user: User): string {
         const payload = { userId: user.id, email: user.email };
         const secretKey = process.env.JWT_SECRET;
-        return jwt.sign(payload, secretKey, { expiresIn: "1h" });
+        if (!secretKey) {
+            throw new Error("JWT_SECRET environment variable is not set");
+        }
+        return jwt.sign(payload, secretKey, { expiresIn: "7d" });
+    }
+
+    async getUserByID(id: string): Promise<User | null> {
+        return this.strategy.getUserById(id);
     }
 
     async getUsers(): Promise<User[]> {
@@ -18,9 +25,8 @@ export class UserService {
 
     async logIn(email: string, password: string) {
         const user = await this.strategy.getUserByEmail(email);
-        const hash = bcrypt.hashSync(password, user?.salt || "");
 
-        if (user && user.hash === hash) {
+        if (user && bcrypt.compareSync(password, user.hash)) {
             return {
                 token: this.generateToken(user),
                 user: user,
@@ -31,9 +37,8 @@ export class UserService {
     }
 
     async createUser(email: string, password: string): Promise<{ token: string; user: User }> {
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(password, salt);
-        const user = await this.strategy.createUser(email, hash, salt);
+        const hash = bcrypt.hashSync(password, 10);
+        const user = await this.strategy.createUser(email, hash);
         return {
             token: this.generateToken(user),
             user: user,
