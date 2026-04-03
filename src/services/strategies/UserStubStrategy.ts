@@ -1,4 +1,4 @@
-import { IUserService } from "../interfaces/IUserService";
+import { IUserService } from "../interfaces/IUserService.js";
 import { User } from "../../models/User.js";
 
 export class UserStubStrategy implements IUserService {

@@ -1,4 +1,4 @@
-import { IUserService } from "./interfaces/IUserService";
+import { IUserService } from "./interfaces/IUserService.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 import bcrypt from "bcryptjs";
@@ -12,7 +12,7 @@ export class UserService {
         if (!secretKey) {
             throw new Error("JWT_SECRET environment variable is not set");
         }
-        return jwt.sign(payload, secretKey, { expiresIn: "1h" });
+        return jwt.sign(payload, secretKey, { expiresIn: "7d" });
     }
 
     async getUserByID(id: string): Promise<User | null> {
