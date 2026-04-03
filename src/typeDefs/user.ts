@@ -9,6 +9,10 @@ export const userTypeDef = `# GraphQL type definition for User
         user: User!
     }
 
+    extend type Query {
+        me: User
+    }
+
     
         
     extend type Mutation {

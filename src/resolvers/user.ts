@@ -6,6 +6,13 @@ export const userResolvers = {
         // getUsers: async (_: any, __: any, context: MyContext) => {
         //     return await context.userService.getUsers();
         // }
+
+        me: async (_: any, __: any, context: MyContext) => {
+            if (!context.userContext || !context.userContext.userId) {
+                return null;
+            }
+            return await context.userService.getUserByID(context.userContext.userId);
+        },
     },
 
     Mutation: {

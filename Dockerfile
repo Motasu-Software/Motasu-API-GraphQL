@@ -8,11 +8,16 @@ COPY package.json package-lock.json ./
 
 COPY prisma ./prisma/
 
-RUN npm ci --only=production
+RUN npm ci
+
+COPY . .
+
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
 RUN npx prisma generate
 
-COPY . .
+RUN npm prune --omit=dev
 
 EXPOSE 4000
 
