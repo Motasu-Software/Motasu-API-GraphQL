@@ -1,6 +1,7 @@
-import { UserService } from "./services/userService";
-import { UserStubStrategy } from "./services/strategies/UserStubStrategy";
-import { UserPrismaStrategy } from "./services/strategies/UserPrismaStrategy";
+import { UserService } from "./services/userService.js";
+import { UserStubStrategy } from "./services/strategies/UserStubStrategy.js";
+import { UserPrismaStrategy } from "./services/strategies/UserPrismaStrategy.js";
+import { Response } from "express";
 
 export interface UserContext {
     userId: string;
@@ -10,6 +11,7 @@ export interface UserContext {
 export interface MyContext {
     userService: UserService;
     userContext?: UserContext;
+    res: Response; 
 }
 
 
