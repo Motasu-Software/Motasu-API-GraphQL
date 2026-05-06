@@ -37,12 +37,17 @@ export class UserService {
     }
 
     async createUser(email: string, password: string): Promise<{ token: string; user: User }> {
+        const existingUser = await this.strategy.getUserByEmail(email);
+        if (existingUser) {
+            throw new Error("Email already in use");
+        }
+
         const hash = bcrypt.hashSync(password, 10);
         const user = await this.strategy.createUser(email, hash);
         return {
             token: this.generateToken(user),
             user: user,
-        };  
+        };
     }
     async deleteUser(id: string): Promise<boolean> {
         return this.strategy.deleteUser(id);
