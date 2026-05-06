@@ -1,18 +1,24 @@
 import { User } from "../../models/User";
 import { IUserService } from "../interfaces/IUserService";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient(); // Assume PrismaClient is properly imported and configured
 
 export class UserPrismaStrategy implements IUserService {
-    createUser(email: string, hash: string): Promise<User> {
-        const newUser = prisma.user.create({
-            data: {
-                email: email,
-                hash: hash
+    async createUser(email: string, hash: string): Promise<User> {
+        try {
+            return await prisma.user.create({
+                data: {
+                    email: email,
+                    hash: hash
+                }
+            });
+        } catch (error: any) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new Error('Email already in use');
             }
-        });
-        return newUser;
+            throw error;
+        }
     }
 
     getUserById(id: string): Promise<User | null> {
