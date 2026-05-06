@@ -1,4 +1,5 @@
-import { userTypeDef } from "./user";
+import { userTypeDef } from "./user.js";
+import { postTypeDef } from "./post.js";
 
 const baseTypeDef = `# Base GraphQL type definitions
     type Query {
@@ -10,5 +11,5 @@ const baseTypeDef = `# Base GraphQL type definitions
     }
 `;
 
-export const typeDefs = [baseTypeDef, userTypeDef];
+export const typeDefs = [baseTypeDef, userTypeDef, postTypeDef];
 

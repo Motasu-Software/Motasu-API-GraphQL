@@ -1,5 +1,5 @@
-import { User } from "../../models/User";
-import { IUserService } from "../interfaces/IUserService";
+import { User } from "../../models/User.js";
+import { IUserService } from "../interfaces/IUserService.js";
 import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient(); // Assume PrismaClient is properly imported and configured

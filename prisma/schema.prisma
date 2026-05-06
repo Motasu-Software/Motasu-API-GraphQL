@@ -13,4 +13,18 @@ model User {
   id    String @id @default(uuid())
   email String @unique
   hash  String
+  posts Post[]
+}
+
+model Post {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  circuit     String
+  car         String
+  lapTime     String
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
