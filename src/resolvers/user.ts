@@ -24,8 +24,8 @@ export const userResolvers = {
                 maxAge: 1000 * 60 * 60 * 24 * 7 // Expire dans 7 jours (en millisecondes)
             });
 
-            // 3. On retourne les données (ton schéma GraphQL n'a plus besoin du token, juste du user)
-            return { user: authData.user }; 
+            // 3. On retourne les données (doit inclure le token pour AuthPayload)
+            return { token: authData.token, user: authData.user }; 
         },
 
         // ⚠️ NOUVELLE MUTATION OBLIGATOIRE POUR LES COOKIES
@@ -50,7 +50,7 @@ export const userResolvers = {
                 maxAge: 1000 * 60 * 60 * 24 * 7
             });
 
-            return { user: authData.user };
+            return { token: authData.token, user: authData.user };
         },
 
         deleteAccount: async (_: any, __: any, context: MyContext) => {
