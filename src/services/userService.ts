@@ -23,6 +23,10 @@ export class UserService {
         return this.strategy.getUsers();
     }
 
+    async getUserByEmail(email: string): Promise<User | null> {
+        return this.strategy.getUserByEmail(email);
+    }
+
     async logIn(email: string, password: string) {
         const user = await this.strategy.getUserByEmail(email);
 

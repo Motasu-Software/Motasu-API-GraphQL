@@ -9,6 +9,9 @@ export const userResolvers = {
             }
             return await context.userService.getUserByID(context.userContext.userId);
         },
+        user: async (_: any, args: { email: string }, context: MyContext) => {
+            return await context.userService.getUserByEmail(args.email);
+        }
     },
 
     Mutation: {
