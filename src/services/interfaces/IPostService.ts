@@ -10,7 +10,7 @@ export interface PostPage {
 
 export interface IPostService {
     getPostById(id: string): Promise<Post | null>;
-    getPosts(page: number, perPage: number): Promise<PostPage>;
+    getPosts(page: number, perPage: number, authorEmail?: string): Promise<PostPage>;
     createPost(authorId: string, title: string, description: string, circuit: string, car: string, lapTime: string): Promise<Post>;
     deletePost(id: string, authorId: string): Promise<boolean>;
 }

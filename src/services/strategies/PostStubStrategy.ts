@@ -32,13 +32,14 @@ export class PostStubStrategy implements IPostService {
         return post || null;
     }
 
-    async getPosts(page: number, perPage: number): Promise<PostPage> {
+    async getPosts(page: number, perPage: number, authorEmail?: string): Promise<PostPage> {
         const safePage = Math.max(1, page);
         const safePerPage = Math.max(1, perPage);
-        const totalItems = this.posts.length;
+        const filteredPosts = this.posts; // authorEmail cannot be resolved in stub mode
+        const totalItems = filteredPosts.length;
         const totalPages = Math.max(1, Math.ceil(totalItems / safePerPage));
         const startIndex = (safePage - 1) * safePerPage;
-        const items = this.posts
+        const items = filteredPosts
             .slice(startIndex, startIndex + safePerPage)
             .map(post => ({ ...post }));
 

@@ -12,12 +12,19 @@ export class PostPrismaStrategy implements IPostService {
         return post ? this.mapToPost(post) : null;
     }
 
-    async getPosts(page: number, perPage: number): Promise<PostPage> {
+    async getPosts(page: number, perPage: number, authorEmail?: string): Promise<PostPage> {
         const safePage = Math.max(1, page);
         const safePerPage = Math.max(1, perPage);
-        const totalItems = await prisma.post.count();
+        const where: any = {};
+
+        if (authorEmail) {
+            where.author = { email: authorEmail };
+        }
+
+        const totalItems = await prisma.post.count({ where });
         const totalPages = Math.max(1, Math.ceil(totalItems / safePerPage));
         const items = await prisma.post.findMany({
+            where,
             skip: (safePage - 1) * safePerPage,
             take: safePerPage,
             orderBy: { createdAt: "desc" }

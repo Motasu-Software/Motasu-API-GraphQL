@@ -8,8 +8,8 @@ export class PostService {
         return this.strategy.getPostById(id);
     }
 
-    async getPosts(page: number, perPage: number): Promise<PostPage> {
-        return this.strategy.getPosts(page, perPage);
+    async getPosts(page: number, perPage: number, authorEmail?: string): Promise<PostPage> {
+        return this.strategy.getPosts(page, perPage, authorEmail);
     }
 
     async createPost(authorId: string, title: string, description: string, circuit: string, car: string, lapTime: string): Promise<Post> {

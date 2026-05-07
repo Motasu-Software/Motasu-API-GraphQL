@@ -2,8 +2,8 @@ import { MyContext } from "../container.js";
 
 export const postResolvers = {
     Query: {
-        posts: async (_: any, args: { page: number; perPage: number }, context: MyContext) => {
-            return context.postService.getPosts(args.page, args.perPage);
+        posts: async (_: any, args: { authorEmail?: string; page: number; perPage: number }, context: MyContext) => {
+            return context.postService.getPosts(args.page, args.perPage, args.authorEmail);
         }
     },
 
@@ -28,7 +28,11 @@ export const postResolvers = {
                 throw new Error("User not authenticated");
             }
 
-            return context.postService.deletePost(args.id, context.userContext.userId);
+            const deleted = await context.postService.deletePost(args.id, context.userContext.userId);
+            if (!deleted) {
+                throw new Error("Impossible de supprimer le post.");
+            }
+            return { id: args.id };
         }
     },
 

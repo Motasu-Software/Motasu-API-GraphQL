@@ -20,11 +20,15 @@ export const postTypeDef = `# GraphQL type definition for Post
     }
 
     extend type Query {
-        posts(page: Int!, perPage: Int!): PostPage!
+        posts(authorEmail: String, page: Int!, perPage: Int!): PostPage!
+    }
+
+    type DeletePostPayload {
+        id: ID!
     }
 
     extend type Mutation {
         createPost(title: String!, description: String!, circuit: String!, car: String!, lapTime: String!): Post!
-        deletePost(id: ID!): Boolean!
+        deletePost(id: ID!): DeletePostPayload!
     }
 `;
